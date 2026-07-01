@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: library_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: library_db
+      MYSQL_USER: library_app
+      MYSQL_PASSWORD: LibraryApp@2026
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpass"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: library_app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_URL: "jdbc:mysql://mysql:3306/library_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+      DB_USER: library_app
+      DB_PASSWORD: "LibraryApp@2026"
+    # Console app needs an interactive TTY when run via `docker compose run app`
+    stdin_open: true
+    tty: true
+
+volumes:
+  mysql_data:
