@@ -1,3 +1,4 @@
+
 # Library Management System
 
 A console-based Library Management System built with **Java 17, JDBC, and MySQL**,
@@ -211,3 +212,4 @@ All 26 tests pass as of the last verified run (23 unit + 3 integration).
 - Extract the loan-limit check into the same transaction as `issueBook` using
   `SELECT ... FOR UPDATE` for correctness under concurrency
 - Add Flyway/Liquibase for schema migrations instead of a single `schema.sql`
+=======
